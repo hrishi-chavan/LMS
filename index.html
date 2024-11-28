@@ -40,11 +40,20 @@
             <h4 class="text-center mb-4" id="lblcallstate"></h2>
         </div>
         <div class="modal-footer">
-          <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Understood</button> -->
-          <button class="btn btn-danger hangup-button" onclick="hangup()">
-            Hang-Up <i class="fas fa-phone-slash"></i>
-        </button>
+            <div class="row w-100">
+                <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Understood</button> -->
+                <div class="col">
+                    <button id="btnAnswer" class="btn btn-success w-100 m-1" onclick="answer()">
+                        Answer <i class="fas fa-phone"></i>
+                    </button>
+                </div>
+                <div class="col">
+                    <button class="btn btn-danger w-100 m-1" onclick="hangup()">
+                        Hang-Up <i class="fas fa-phone-slash"></i>
+                    </button>
+                </div>
+            </div>
         </div>
       </div>
     </div>
@@ -91,7 +100,7 @@ const jsonData = [
                 <span>${ maskPhoneNumber(item.mobile) }</span>
             </div>
             <div>
-                <button class="btn btn-success call-button" onclick="call('${item.name}', '${item.mobile}')">
+                <button class="btn btn-success call-button" onclick="outgoingCall('${item.name}', '${item.mobile}')">
                     <i class="fas fa-phone"></i>
                 </button>
             </div>
@@ -102,44 +111,77 @@ const jsonData = [
 
     document.getElementById("listLeads").innerHTML = generateHTML(jsonData);
 
-    function call(name, mobile) {
-        //alert(name + " call is answered.");
-        
-        // Hide the Answer button and show Hang Up button
-        //let callButton = document.querySelector(`.call-button[onclick="answerCall('${name}')"]`);
-        //let hangupButton = document.querySelector(`.hangup-button[onclick="hangupCall('${name}')"]`);
-        
-        //callButton.style.display = 'none';
-        //hangupButton.style.display = 'inline-block';
+    var modal = document.getElementById('staticBackdrop');
+
+    isModalOpen = false;
+    
+    // Listen for the modal open event
+    modal.addEventListener('shown.bs.modal', function () {
+        isModalOpen = true;
+    });
+
+    // Listen for the modal close event
+    modal.addEventListener('hidden.bs.modal', function () {
+        isModalOpen = false;
+    });
+
+    function showCallDetails(name, mobile, callDirection = "None"){
         let lblname = document.getElementById('lblname');
         lblname.textContent = name;
         let lblmobile = document.getElementById('lblmobile');
         lblmobile.textContent = maskPhoneNumber(mobile);
+        let btnAnswer = document.getElementById("btnAnswer");
+        if (callDirection == "incoming") {
+            // Show the element
+            btnAnswer.style.display = "block"; // Or "inline", depending on your layout
+        } else {
+            // Hide the element
+            btnAnswer.style.display = "none";
+        }
         var _modal = new bootstrap.Modal(document.getElementById('staticBackdrop'));
         _modal.show();
+    }
+
+    function outgoingCall(name, mobile) {      
         if(window.Flutter){
             window.Flutter.postMessage(`{"method" : "call", "mobile" : "${mobile}"}`);
+            showCallDetails(name, mobile, "outgoing");
+        }
+        else{
+            alert("Unable to call");
         }
     }
 
-    function hangup() {
-        //alert(name + " call is hung up.");
-        
-        // Show the Answer button and hide Hang Up button
-        //let callButton = document.querySelector(`.call-button[onclick="answerCall('${name}')"]`);
-        //let hangupButton = document.querySelector(`.hangup-button[onclick="hangupCall('${name}')"]`);
-        
-        //callButton.style.display = 'inline-block';
-        //hangupButton.style.display = 'none';
+    function answer() {       
+        window.Flutter.postMessage(`{"method" : "answer", "mobile" : ""}`);
+    }
 
-        var _modal = bootstrap.Modal.getInstance(document.getElementById('staticBackdrop'));
-        _modal.hide();
+    function hangup() {       
         window.Flutter.postMessage(`{"method" : "hangup", "mobile" : ""}`);
     }
+
     function callStateChanged(state){
         let lblcallstate = document.getElementById('lblcallstate');
-        lblcallstate.textContent = maskPhoneNumber(state);
+        lblcallstate.textContent = state;
+        if (state == "Active") {
+            let btnAnswer = document.getElementById("btnAnswer");
+            btnAnswer.style.display = "none";
+        }
+        if(state == "Disconnected"){
+            var _modal = bootstrap.Modal.getInstance(document.getElementById('staticBackdrop'));
+            _modal.hide();
+        }
     }
+
+    function incomingCall(mobile){        
+        if(!isModalOpen){
+            let lead = jsonData.find(o => o.mobile === mobile);
+            showCallDetails(lead ? lead.name : "Unknown", mobile, "incoming");
+        }
+
+    }
+
+
 </script>
 </body>
 </html>
