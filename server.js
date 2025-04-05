@@ -1,15 +1,17 @@
-var http = require('http');
-var fs = require('fs');
+const express = require('express');
+const path = require('path');
+const app = express();
 
-const PORT=8080; 
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, './')));
 
-fs.readFile('./index.html', function (err, html) {
+// Serve an index.html as a fallback (optional)
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, './', 'index.html'));
+});
 
-    if (err) throw err;    
-
-    http.createServer(function(request, response) {  
-        response.writeHeader(200, {"Content-Type": "text/html"});  
-        response.write(html);  
-        response.end();  
-    }).listen(PORT);
+// Start the server
+const PORT = process.env.PORT || 80;
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
 });

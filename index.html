@@ -1,191 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="cache-control" content="max-age=0" />
-    <meta http-equiv="cache-control" content="no-cache" />
-    <meta http-equiv="expires" content="0" />
-    <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
-    <meta http-equiv="pragma" content="no-cache" />
-    <title>Call List with Buttons</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-     <!-- Font Awesome Icons -->
-     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <style>
-        .call-button {
-            margin-right: 10px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="cache-control" content="max-age=0" />
+  <meta http-equiv="cache-control" content="no-cache" />
+  <meta http-equiv="expires" content="0" />
+  <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+  <meta http-equiv="pragma" content="no-cache" />
+  <title>CRM</title>
+  <link rel="stylesheet" type="text/css" href="./styles.css">
+  <script src="./js/util.js" defer></script>
+  <script src="./js/app.js" defer></script>
+  <script src="./js/toast.js" defer></script>
+  <script src="./js/login.js" defer></script>
+  <script src="./js/home.js" defer></script>
+  <script src="./js/callerid.js" defer></script>
 </head>
 <body>
+  <!-- Content area for the current page -->
+  <div id="app"></div>
 
-<div class="container mt-5">
-    <h2 class="text-center mb-4">Leads</h2>
-    
-    <!-- Contact List -->
-    <div id="listLeads" class="list-group">
-    </div>
-</div>
-
-<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="lblname">Ajinkya Agalave</h1>
-        </div>
-        <div class="modal-body">
-            <h2 class="text-center mb-4" id="lblmobile">+91 913-***-3625</h2>
-            <h4 class="text-center mb-4" id="lblcallstate"></h2>
-        </div>
-        <div class="modal-footer">
-            <div class="row w-100">
-                <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Understood</button> -->
-                <div class="col">
-                    <button id="btnAnswer" class="btn btn-success w-100 m-1" onclick="answer()">
-                        Answer <i class="fas fa-phone"></i>
-                    </button>
-                </div>
-                <div class="col">
-                    <button class="btn btn-danger w-100 m-1" onclick="hangup()">
-                        Hang-Up <i class="fas fa-phone-slash"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-<!-- Bootstrap JS & Popper.js (for proper functioning of Bootstrap) -->
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
-
-<!-- Custom JavaScript to simulate call actions -->
-<script>
-
-const jsonData = [
-        {
-        "name": "Ajinkya Agalave",
-        "mobile": "+919136213625",
-        },
-        {
-        "name": "Hrishikesh Chavan",
-        "mobile": "+918097588760",
-        },
-        {
-        "name": "Prashant Khamkar",
-        "mobile": "+919892939523",
-        }
-    ];
-
-    function maskPhoneNumber(str, visibleStart = 6, visibleEnd = 3) {
-        if (str.length <= visibleStart + visibleEnd) {
-            return str;  // Return as-is if the string is too short to mask
-        }
-
-        const start = str.slice(0, visibleStart);  // Get visible start part
-        const end = str.slice(-visibleEnd);  // Get visible end part
-        const masked = '*'.repeat(str.length - visibleStart - visibleEnd);  // Mask middle part
-
-        return start + masked + end;  // Combine the parts
-    }
-
-    function generateHTML(json) {
-      let html = "";
-
-      // Loop through phoneNumbers array and create list items
-      json.forEach(item => {
-        html += `<div class="list-group-item d-flex justify-content-between align-items-center">
-            <div>
-                <strong>${item.name}</strong><br>
-                <span>${ maskPhoneNumber(item.mobile) }</span>
-            </div>
-            <div>
-                <button class="btn btn-success call-button" onclick="outgoingCall('${item.name}', '${item.mobile}')">
-                    <i class="fas fa-phone"></i>
-                </button>
-            </div>
-        </div>`;
-      });
-      return html;
-    }
-
-    document.getElementById("listLeads").innerHTML = generateHTML(jsonData);
-
-    var modal = document.getElementById('staticBackdrop');
-
-    isModalOpen = false;
-    
-    // Listen for the modal open event
-    modal.addEventListener('shown.bs.modal', function () {
-        isModalOpen = true;
-    });
-
-    // Listen for the modal close event
-    modal.addEventListener('hidden.bs.modal', function () {
-        isModalOpen = false;
-    });
-
-    function showCallDetails(name, mobile, callDirection = "None"){
-        let lblname = document.getElementById('lblname');
-        lblname.textContent = name;
-        let lblmobile = document.getElementById('lblmobile');
-        lblmobile.textContent = maskPhoneNumber(mobile);
-        let btnAnswer = document.getElementById("btnAnswer");
-        if (callDirection == "incoming") {
-            // Show the element
-            btnAnswer.style.display = "block"; // Or "inline", depending on your layout
-        } else {
-            // Hide the element
-            btnAnswer.style.display = "none";
-        }
-        var _modal = new bootstrap.Modal(document.getElementById('staticBackdrop'));
-        _modal.show();
-    }
-
-    function outgoingCall(name, mobile) {      
-        if(window.Flutter){
-            window.Flutter.postMessage(`{"method" : "call", "mobile" : "${mobile}"}`);
-            showCallDetails(name, mobile, "outgoing");
-        }
-        else{
-            alert("Unable to call");
-        }
-    }
-
-    function answer() {       
-        window.Flutter.postMessage(`{"method" : "answer", "mobile" : ""}`);
-    }
-
-    function hangup() {       
-        window.Flutter.postMessage(`{"method" : "hangup", "mobile" : ""}`);
-    }
-
-    function callStateChanged(state){
-        let lblcallstate = document.getElementById('lblcallstate');
-        lblcallstate.textContent = state;
-        if (state == "Active") {
-            let btnAnswer = document.getElementById("btnAnswer");
-            btnAnswer.style.display = "none";
-        }
-        if(state == "Disconnected"){
-            var _modal = bootstrap.Modal.getInstance(document.getElementById('staticBackdrop'));
-            _modal.hide();
-        }
-    }
-
-    function incomingCall(mobile){        
-        if(!isModalOpen){
-            let lead = jsonData.find(o => o.mobile === mobile);
-            showCallDetails(lead ? lead.name : "Unknown", mobile, "incoming");
-        }
-
-    }
-
-
-</script>
+  <toast-notification class="toast-container"></toast-notification>
 </body>
 </html>
