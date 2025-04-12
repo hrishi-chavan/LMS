@@ -72,6 +72,7 @@ class CallerIdPage extends HTMLElement {
             background-color: #e53935;
             color : #FFF;
             text-align : center;
+            display : none;
         }
         .call_status_container #call_status{
             padding: 10px;
@@ -248,25 +249,27 @@ class CallerIdPage extends HTMLElement {
       let btnHangUp = this.shadowRoot.querySelector(".hangup-btn");
       let btnSubmit = this.shadowRoot.querySelector(".submit-btn");
 
+      btnAnswer.style.visibility = "hidden";
+      btnHangUp.style.display = "none";
       if(!this.isDialerAvailable){
-          btnAnswer.style.visibility = "hidden";
-          btnHangUp.style.display = "none";
+          //btnAnswer.style.visibility = "hidden";
+          //btnHangUp.style.display = "none";
       }
       else {
         if (this.callStatus === "Ringing") {
-          btnAnswer.style.removeProperty('visibility');
-          btnHangUp.style.removeProperty('display');
-          btnSubmit.style.display = "none"; 
+          //btnAnswer.style.removeProperty('visibility');
+          //btnHangUp.style.removeProperty('display');
+          //btnSubmit.style.display = "none"; 
         }
         else if (this.callStatus === "Active") {
-            btnAnswer.style.visibility = "hidden";
+            //btnAnswer.style.visibility = "hidden";
             btnSubmit.style.display = "none"; 
             this.startTimer();
         }
         else if(this.callStatus === "Disconnected"){
-            btnAnswer.style.visibility = "hidden";
-            btnHangUp.style.display = "none";            
-          btnSubmit.style.removeProperty('display');
+            //btnAnswer.style.visibility = "hidden";
+            //btnHangUp.style.display = "none";            
+            btnSubmit.style.removeProperty('display');
             this.stopTimer();
         }
       }

@@ -7,14 +7,14 @@
   #app {
     font-family: Arial, sans-serif;
     height: 100vh;
-    padding: 25px 10px;
+    padding: 10px 10px;
     position: relative;
     margin: 0;
   }
   /* Toast container */
 .toast-container {
 position: fixed;
-bottom: 20px;
+bottom: 0px;
 padding: 10px;
 width: 100%;
 z-index: 1000;

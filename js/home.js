@@ -44,14 +44,15 @@ class CustomerCard extends HTMLElement {
         }
 
         .card-body {
-        padding: 15px;
+        padding: 10px;
         display: flex;
         justify-content: space-between;
         }
 
         .card-body h2 {
         font-size: 20px;
-        margin-bottom: 10px;
+        margin-bottom: 0px;
+        margin-top: 0px;
         }
 
         .card-body p {
@@ -235,7 +236,7 @@ class CustomerCard extends HTMLElement {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
         gap: 20px;
-        margin-top: 20px;
+        margin-top: 10px;
         }`
         const formHTML = `<dashboard-page></dashboard-page>
         <div class="customer-list"></div>`;
