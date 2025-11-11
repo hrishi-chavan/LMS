@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hotel Menu</title>
+  
+  <!-- Materialize CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet"/>
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+
+  <style>
+    body {
+      background: #fafafa;
+    }
+    .menu-item img {
+      border-radius: 8px;
+    }
+    .page {
+      display: none;
+    }
+    .page.active {
+      display: block;
+    }
+    .fixed-action-btn {
+      bottom: 70px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <nav class="teal">
+    <div class="nav-wrapper">
+      <a href="#!" class="brand-logo center">Hotel Menu</a>
+    </div>
+  </nav>
+
+  <!-- ===== MENU LIST PAGE ===== -->
+  <div id="menuPage" class="page active container">
+    <h5 class="center">Our Dishes</h5>
+    <ul class="collection">
+      <li class="collection-item avatar menu-item" onclick="showDetail('pasta')">
+        <img src="https://img.freepik.com/premium-photo/classic-italian-pasta-penne-parmesan-cheese-dark-table-penne-pasta-with-sauce-top-view-generative-ai_47243-2249.jpg" alt="" class="circle">
+        <span class="title"><b>Creamy Alfredo Pasta</b></span>
+        <p>Rich and creamy white sauce<br>₹450</p>
+        <a href="#!" class="secondary-content"><i class="material-icons">chevron_right</i></a>
+      </li>
+      <li class="collection-item avatar menu-item" onclick="showDetail('pizza')">
+        <img src="https://cdn.pixabay.com/photo/2024/04/18/10/41/ai-generated-8704060_1280.jpg" alt="" class="circle">
+        <span class="title"><b>Margherita Pizza</b></span>
+        <p>Classic cheese and basil<br>₹500</p>
+        <a href="#!" class="secondary-content"><i class="material-icons">chevron_right</i></a>
+      </li>
+    </ul>
+
+    <!-- Floating button to view orders -->
+    <div class="fixed-action-btn">
+      <a class="btn-floating btn-large teal" onclick="showOrderList()">
+        <i class="large material-icons">receipt</i>
+      </a>
+    </div>
+  </div>
+
+  <!-- ===== DETAIL PAGE ===== -->
+  <div id="detailPage" class="page container">
+    <a href="#!" onclick="goBackToMenu()" class="btn-flat"><i class="material-icons left">arrow_back</i>Back</a>
+    <div id="detailContent"></div>
+  </div>
+
+  <!-- ===== ORDER PAGE ===== -->
+  <div id="orderPage" class="page container">
+    <a href="#!" onclick="goBackToDetail()" class="btn-flat"><i class="material-icons left">arrow_back</i>Back</a>
+    <h5>Place Your Order</h5>
+    <form id="orderForm">
+      <div class="input-field">
+        <input id="name" type="text" required>
+        <label for="name">Full Name</label>
+      </div>
+      <div class="input-field">
+        <input id="room" type="text" required>
+        <label for="room">Table Number</label>
+      </div>
+      <div class="input-field">
+        <input id="quantity" type="number" value="1" min="1" required>
+        <label for="quantity">Quantity</label>
+      </div>
+      <div class="input-field">
+        <textarea id="notes" class="materialize-textarea"></textarea>
+        <label for="notes">Special Instructions</label>
+      </div>
+      <button type="submit" class="btn waves-effect waves-light teal">Confirm Order</button>
+    </form>
+  </div>
+
+  <!-- ===== ORDER LIST PAGE ===== -->
+  <div id="orderListPage" class="page container">
+    <a href="#!" onclick="goBackToMenuFromList()" class="btn-flat"><i class="material-icons left">arrow_back</i>Back</a>
+    <h5>My Orders</h5>
+    <ul id="orderList" class="collection"></ul>
+  </div>
+
+  <!-- ===== JS ===== -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script>
+    const pages = {
+      menu: document.getElementById('menuPage'),
+      detail: document.getElementById('detailPage'),
+      order: document.getElementById('orderPage'),
+      orderList: document.getElementById('orderListPage')
+    };
+
+    const details = {
+      pasta: {
+        name: 'Creamy Alfredo Pasta',
+        img: 'https://img.freepik.com/premium-photo/classic-italian-pasta-penne-parmesan-cheese-dark-table-penne-pasta-with-sauce-top-view-generative-ai_47243-2249.jpg',
+        price: 450,
+        desc: 'A rich blend of cream, cheese, and herbs tossed with perfectly cooked fettuccine pasta.'
+      },
+      pizza: {
+        name: 'Margherita Pizza',
+        img: 'https://cdn.pixabay.com/photo/2024/04/18/10/41/ai-generated-8704060_1280.jpg',
+        price: 500,
+        desc: 'A timeless Italian classic topped with mozzarella, fresh basil, and tomato sauce.'
+      }
+    };
+
+    let orders = []; // store all orders
+
+    function showDetail(item) {
+      pages.menu.classList.remove('active');
+      pages.detail.classList.add('active');
+      const d = details[item];
+      document.getElementById('detailContent').innerHTML = `
+        <div class="card">
+          <div class="card-image">
+            <img src="${d.img}" alt="${d.name}">
+            <span class="card-title">${d.name}</span>
+          </div>
+          <div class="card-content">
+            <p>${d.desc}</p>
+            <h6><b>Price: ₹${d.price}</b></h6>
+          </div>
+          <div class="card-action">
+            <a href="#!" onclick="goToOrder('${item}')" class="btn waves-effect teal">Order Now</a>
+          </div>
+        </div>
+      `;
+    }
+
+    function goBackToMenu() {
+      pages.menu.classList.add('active');
+      pages.detail.classList.remove('active');
+      pages.order.classList.remove('active');
+      pages.orderList.classList.remove('active');
+    }
+
+    function goToOrder(itemKey) {
+      const item = details[itemKey];
+      pages.detail.classList.remove('active');
+      pages.order.classList.add('active');
+
+      const form = document.getElementById('orderForm');
+      form.onsubmit = function(e) {
+        e.preventDefault();
+        const qty = parseInt(document.getElementById('quantity').value);
+        const name = document.getElementById('name').value;
+        const table = document.getElementById('room').value;
+        const notes = document.getElementById('notes').value;
+
+        const order = {
+          dish: item.name,
+          qty,
+          price: item.price,
+          total: item.price * qty,
+          customer: name,
+          table,
+          notes,
+          time: new Date().toLocaleString()
+        };
+
+        orders.push(order);
+
+        M.toast({html: `Order placed for ${qty} × ${item.name} (₹${order.total})`, classes: 'rounded teal'});
+        form.reset();
+        goBackToMenu();
+      };
+    }
+
+    function goBackToDetail() {
+      pages.menu.classList.remove('active');
+      pages.detail.classList.add('active');
+      pages.order.classList.remove('active');
+      pages.orderList.classList.remove('active');
+    }
+
+    // === SHOW ORDER LIST PAGE ===
+    function showOrderList() {
+      pages.menu.classList.remove('active');
+      pages.orderList.classList.add('active');
+
+      const list = document.getElementById('orderList');
+      list.innerHTML = '';
+
+      if (orders.length === 0) {
+        list.innerHTML = '<li class="collection-item center grey-text">No orders yet.</li>';
+        return;
+      }
+
+      orders.forEach((o, i) => {
+        list.innerHTML += `
+          <li class="collection-item avatar">
+            <i class="material-icons circle teal">restaurant</i>
+            <span class="title"><b>${o.dish}</b></span>
+            <p>Qty: ${o.qty} | ₹${o.price} each<br>
+               Table: ${o.table} | ${o.time}</p>
+            <span class="secondary-content">₹${o.total}</span>
+          </li>
+        `;
+      });
+    }
+
+    function goBackToMenuFromList() {
+      pages.menu.classList.add('active');
+      pages.detail.classList.remove('active');
+      pages.order.classList.remove('active');
+      pages.orderList.classList.remove('active');
+    }
+  </script>
+</body>
+</html>
