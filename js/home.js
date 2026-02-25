@@ -160,7 +160,8 @@ class CustomerCard extends HTMLElement {
 
     // Method to handle edit button click
     handleCallClick() {   
-        window.location.hash = `callerid?m=${this._customerData.phone}`;
+        //window.location.hash = `callerid?m=${this._customerData.phone}`;
+        window.location.href = `tel:${this._customerData.phone}`;
     }
 
     // When the component is connected to the DOM
